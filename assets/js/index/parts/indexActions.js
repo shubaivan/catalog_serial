@@ -36,16 +36,20 @@ export default function printActionFunctions() {
                         '  <ul class="pagination">';
 
                     let number = Math.ceil(parseInt(data.count)/10);
-                    var pagingNumbers = Array(number);
 
-                    $.each(pagingNumbers, function (index, value) {
-                        index += 1;
-                        if (clickPaginationNav && pagin === index) {
-                            pagination += '<li class="page-item active"><span class="page-link" data-pagin="' + index + '">' + index + '</span></li>';
-                        } else {
-                            pagination += '<li class="page-item"><span class="page-link" data-pagin="' + index + '">' + index + '</span></li>';
-                        }
-                    });
+                    if (number) {
+                        var pagingNumbers = Array(number);
+
+                        $.each(pagingNumbers, function (index, value) {
+                            index += 1;
+                            if (clickPaginationNav && pagin === index) {
+                                pagination += '<li class="page-item active"><span class="page-link" data-pagin="' + index + '">' + index + '</span></li>';
+                            } else {
+                                pagination += '<li class="page-item"><span class="page-link" data-pagin="' + index + '">' + index + '</span></li>';
+                            }
+                        });
+                    }
+
                     pagination += '  </ul>\n' +
                         '</nav>';
                     $(pagination).insertAfter('#main_content');
@@ -66,7 +70,6 @@ export default function printActionFunctions() {
                 } else {
                     window.scrollTo(0,document.body.scrollHeight);
                 }
-                    // $('.justify-content-between').focus();
             }
         });
     }

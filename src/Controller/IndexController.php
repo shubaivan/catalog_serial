@@ -12,9 +12,12 @@ class IndexController extends AbstractController
      */
     public function home()
     {
-        return $this->render('home/index.html.twig', [
+        if ($this->isGranted('ROLE_USER') || $this->isGranted('ROLE_ADMIN'))
+        {
+            return $this->render('index/index.html.twig', []);
+        }
 
-        ]);
+        return $this->render('home/index.html.twig', []);
     }
 
     /**

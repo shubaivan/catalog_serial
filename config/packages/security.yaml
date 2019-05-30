@@ -23,6 +23,7 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
         main:
             logout:
                 path:   app_logout
@@ -43,4 +44,5 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/index, roles: [ROLE_USER, ROLE_ADMIN] }
+        - { path: ^/doc, roles: [ROLE_USER, ROLE_ADMIN] }
 

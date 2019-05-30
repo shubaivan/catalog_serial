@@ -1,7 +1,6 @@
 parameters:
     locale: 'en'
     app.logout_listener.class: App\Listener\LogoutListener
-    app.authentication_success_handler.class: App\Security\ApiAuthentificatorHandler
 
 services:
     _defaults:
@@ -21,9 +20,4 @@ services:
         arguments:
             - "@doctrine.orm.default_entity_manager"
 
-    app.api_authentication_success_handler:
-        public: true
-        class: "%app.authentication_success_handler.class%"
-        tags:
-            - { name: monolog.logger, channel: security }
 

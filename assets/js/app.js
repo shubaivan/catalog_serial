@@ -14,4 +14,8 @@ require('@fortawesome/fontawesome-free/js/all.js');
 const $ = require('jquery');
 global.$ = global.jQuery = $;
 require('bootstrap');
+
+let number = Math.ceil(parseInt(23)/10);
+console.log(number);
 console.log('Hello Webpack Encore! Edit me in assets/js/app.js');
+

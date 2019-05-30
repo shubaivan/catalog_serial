@@ -1,22 +1,77 @@
 export default function printActionFunctions() {
-    console.log('hello');
-    const get_serials_data = window.Routing.generate(
-        'get_serials_data');
+    var count;
 
-    $.ajax({
-        type: "GET",
-        url: get_serials_data,
-        error: (result) => {
-            console.log(result);
-        },
-        success: (data) => {
-            let content = '';
-            $.each(data, function( index, value ) {
-                content += extracted(value);
-            });
-            $('#main_content').append(content);
-        }
+    $("body").on('click', ".page-link", function(){
+        console.log('kk');
+        $('#main_content').empty();
+        let current = $(this);
+        getSerialsData(current.data('pagin'), current);
     });
+
+    function getSerialsData(pagin, el) {
+        let get_serials_data = window.Routing.generate(
+            'get_serials_data');
+        let clickPaginationNav = false;
+        if (pagin !== undefined) {
+            get_serials_data += '?page=' + pagin;
+            clickPaginationNav = true;
+        }
+
+        $.ajax({
+            type: "GET",
+            url: get_serials_data,
+            error: (result) => {
+                console.log(result);
+            },
+            success: (data) => {
+                let content = '';
+
+                $.each(data.collection, function (index, value) {
+                    content += extracted(value);
+                });
+                if (parseInt(count) !== parseInt(data.count)) {
+                    $('.pagination_container').remove();
+
+                    let pagination = '<nav aria-label="Page navigation" class="example pagination_container">\n' +
+                        '  <ul class="pagination">';
+
+                    let number = Math.ceil(parseInt(data.count)/10);
+                    var pagingNumbers = Array(number);
+
+                    $.each(pagingNumbers, function (index, value) {
+                        index += 1;
+                        if (clickPaginationNav && pagin === index) {
+                            pagination += '<li class="page-item active"><span class="page-link" data-pagin="' + index + '">' + index + '</span></li>';
+                        } else {
+                            pagination += '<li class="page-item"><span class="page-link" data-pagin="' + index + '">' + index + '</span></li>';
+                        }
+                    });
+                    pagination += '  </ul>\n' +
+                        '</nav>';
+                    $(pagination).insertAfter('#main_content');
+                    $(pagination).insertBefore('#main_content');
+                    count = data.count;
+                }
+
+                if (clickPaginationNav && parseInt(pagin)) {
+                    $("span").closest('li').removeClass('active');
+                    $("span[data-pagin='" + parseInt(pagin) +"']").closest('li').addClass('active');
+                }
+
+                $('#main_content').append(content);
+            },
+            complete: () => {
+                if (el !== undefined) {
+                    el.focus();
+                } else {
+                    window.scrollTo(0,document.body.scrollHeight);
+                }
+                    // $('.justify-content-between').focus();
+            }
+        });
+    }
+
+    getSerialsData();
 
     function extracted(value) {
         return '<div class="col-md-4">\n' +

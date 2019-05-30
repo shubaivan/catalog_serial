@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Serial;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use FOS\RestBundle\Request\ParamFetcher;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -19,32 +20,30 @@ class SerialRepository extends ServiceEntityRepository
         parent::__construct($registry, Serial::class);
     }
 
-    // /**
-    //  * @return Serial[] Returns an array of Serial objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param ParamFetcher $paramFetcher
+     * @param bool $count
+     * @return Serial[]|int
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getSerials(ParamFetcher $paramFetcher, $count = false)
     {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('s.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Serial
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $qb = $this->createQueryBuilder('s');
+
+        if ($count) {
+            $qb->select('COUNT(s.id)');
+            $query = $qb->getQuery();
+            $result = $query->getSingleScalarResult();
+        } else {
+            $qb
+                ->orderBy('s.'.$paramFetcher->get('sort_by'), $paramFetcher->get('sort_order'))
+                ->setFirstResult($paramFetcher->get('count') * ($paramFetcher->get('page') - 1))
+                ->setMaxResults($paramFetcher->get('count'));
+            $query = $qb->getQuery();
+            $result = $query->getResult();
+        }
+
+        return $result;
     }
-    */
 }

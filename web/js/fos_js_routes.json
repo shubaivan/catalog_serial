@@ -1,1 +1,0 @@
-{"base_url":"","routes":{"get_serials_data":{"tokens":[["variable",".","json|html","_format",true],["text","\/api\/serials\/data"]],"defaults":{"_format":"json"},"requirements":{"_format":"json|html"},"hosttokens":[],"methods":["GET"],"schemes":[]}},"prefix":"","host":"localhost","port":"","scheme":"http"}

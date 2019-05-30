@@ -3,6 +3,7 @@
 namespace App\Controller\Api\Serial;
 
 use App\Controller\Api\AbstractRestController;
+use App\Entity\Serial;
 use App\Repository\SerialRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\View as RestView;
@@ -32,7 +33,7 @@ class SerialsApiController extends AbstractRestController
     /**
      * get Serials.
      * <strong>Simple example:</strong><br />
-     * http://endpoint/partner/apps/{id}/data <br>.
+     * http://endpoint/api/serials/data <br>.
      *
      * @ApiDoc(
      * resource = true,
@@ -66,12 +67,51 @@ class SerialsApiController extends AbstractRestController
     public function getSerialsDataAction(ParamFetcher $paramFetcher)
     {
         try {
-            $t = 1;
             return $this->createSuccessResponse(
                 [
                     'collection' => $this->serialsRepository->getSerials($paramFetcher),
                     'count' => $this->serialsRepository->getSerials($paramFetcher, true)
                 ]
+            );
+        } catch (\Exception $e) {
+            $view = $this->view((array)$e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * get Serial by id.
+     * <strong>Simple example:</strong><br />
+     * http://endpoint/api/serials/data/{id} <br>.
+     *
+     * @ApiDoc(
+     * resource = true,
+     * description = "get Serial by id",
+     * authentication=true,
+     *  parameters={
+     *
+     *  },
+     * statusCodes = {
+     *      200 = "Returned when successful",
+     *      400 = "Bad request"
+     * },
+     * section="Serials"
+     * )
+     *
+     * @RestView()
+     *
+     * @throws NotFoundHttpException when not exist
+     *
+     * @return Response|View
+     *
+     * @IsGranted({"ROLE_ADMIN", "ROLE_USER"})
+     */
+    public function getSerialAction(Serial $serial)
+    {
+        try {
+            return $this->createSuccessResponse(
+                $serial
             );
         } catch (\Exception $e) {
             $view = $this->view((array)$e->getMessage(), Response::HTTP_BAD_REQUEST);

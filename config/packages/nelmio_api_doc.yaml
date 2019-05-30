@@ -1,10 +1,5 @@
 nelmio_api_doc:
   name: API
-  sandbox:
-    authentication:
-      name:           Authorization
-      delivery:       http
-      type:           bearer
 
   cache:
     enabled:            false

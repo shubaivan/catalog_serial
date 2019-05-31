@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Serial;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use FOS\RestBundle\Request\ParamFetcher;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -32,14 +33,17 @@ class SerialRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('s');
 
         if ($count) {
-            $qb->select('COUNT(s.id)');
+            $qb
+                ->select('COUNT(s.id)')
+                ->orderBy('s.createdAt', Criteria::DESC);
             $query = $qb->getQuery();
             $result = $query->getSingleScalarResult();
         } else {
             $qb
                 ->orderBy('s.'.$paramFetcher->get('sort_by'), $paramFetcher->get('sort_order'))
                 ->setFirstResult($paramFetcher->get('count') * ($paramFetcher->get('page') - 1))
-                ->setMaxResults($paramFetcher->get('count'));
+                ->setMaxResults($paramFetcher->get('count'))
+                ->orderBy('s.createdAt', Criteria::DESC);
             $query = $qb->getQuery();
             $result = $query->getResult();
         }

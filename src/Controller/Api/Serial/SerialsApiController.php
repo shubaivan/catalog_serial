@@ -4,6 +4,7 @@ namespace App\Controller\Api\Serial;
 
 use App\Controller\Api\AbstractRestController;
 use App\Entity\Serial;
+use App\Exception\ValidatorException;
 use App\Repository\SerialRepository;
 use App\Service\ObjectManager;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -132,7 +133,7 @@ class SerialsApiController extends AbstractRestController
     /**
      * put Serial by id.
      * <strong>Simple example:</strong><br />
-     * http://endpoint/api/serials/data/{id} <br>.
+     * http://endpoint/api/serials/data <br>.
      *
      * @ApiDoc(
      * resource = true,
@@ -156,7 +157,7 @@ class SerialsApiController extends AbstractRestController
      *
      * @IsGranted({"ROLE_ADMIN", "ROLE_USER"})
      */
-    public function putSerialAction(Request $request)
+    public function putSerialAction()
     {
         try {
             /** @var Serial $model */
@@ -170,6 +171,58 @@ class SerialsApiController extends AbstractRestController
             return $this->createSuccessResponse(
                 $model
             );
+        } catch (ValidatorException $e) {
+            $view = $this->view($e->getConstraintViolatinosList(), Response::HTTP_BAD_REQUEST);
+        } catch (\Exception $e) {
+            $view = $this->view((array)$e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * post Serial by id.
+     * <strong>Simple example:</strong><br />
+     * http://endpoint/api/serials/data <br>.
+     *
+     * @ApiDoc(
+     * resource = true,
+     * description = "post Serial by id",
+     * authentication=true,
+     *  parameters={
+     *
+     *  },
+     * statusCodes = {
+     *      200 = "Returned when successful",
+     *      400 = "Bad request"
+     * },
+     * section="Serials"
+     * )
+     *
+     * @RestView()
+     *
+     * @throws NotFoundHttpException when not exist
+     *
+     * @return Response|View
+     *
+     * @IsGranted({"ROLE_ADMIN", "ROLE_USER"})
+     */
+    public function postSerialAction()
+    {
+        try {
+            /** @var Serial $model */
+            $model = $this->objectManager->startProcessingEntity(
+                Serial::class,
+                'request',
+                [Serial::GROUP_POST]
+            );
+            $this->serialsRepository->save($model);
+
+            return $this->createSuccessResponse(
+                $model
+            );
+        } catch (ValidatorException $e) {
+            $view = $this->view($e->getConstraintViolatinosList(), Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
             $view = $this->view((array)$e->getMessage(), Response::HTTP_BAD_REQUEST);
         }

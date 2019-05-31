@@ -14,6 +14,42 @@ export default function printActionFunctions() {
         }
     });
 
+    $('#save_serial').on('click', function () {
+        var attributes = {};
+        attributes.name = $('input[name="name"]').val();
+        attributes.short_description = $('input[name="short_desription"]').val();
+
+        let post_serial = window.Routing.generate(
+            'post_serial');
+
+        $.ajax({
+            type: "POST",
+            url: post_serial,
+            data: JSON.stringify(attributes),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                $('.center').hide();
+                $('#add_serial').show();
+                getSerialsData();
+                console.log(data);
+            },
+            error: function (result) {
+                console.log(result)
+            }
+        });
+    });
+
+    $('#add_serial').on('click', function () {
+        $('.center').show();
+        $(this).hide();
+    });
+
+    $('#close').on('click', function () {
+        $('.center').hide();
+        $('#add_serial').show();
+    });
+
     function getSerialsData(pagin, el) {
         let get_serials_data = window.Routing.generate(
             'get_serials_data');

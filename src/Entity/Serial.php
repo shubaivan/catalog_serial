@@ -13,24 +13,29 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Serial
 {
     const GROUP_PUT = 'put_group';
+    const GROUP_POST = 'post_group';
+
     use TimestampableEntity;
 
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
+     * @Assert\NotBlank(groups={Serial::GROUP_PUT})
      * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Annotation\Groups({Serial::GROUP_PUT})
+     * @Assert\NotBlank(groups={Serial::GROUP_POST})
+     * @Annotation\Groups({Serial::GROUP_PUT, Serial::GROUP_POST})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Annotation\Groups({Serial::GROUP_PUT})
+     * @Assert\NotBlank(groups={Serial::GROUP_POST})
+     * @Annotation\Groups({Serial::GROUP_PUT, Serial::GROUP_POST})
      */
     private $shortDescription;
 

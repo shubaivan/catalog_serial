@@ -16,6 +16,23 @@
                     {#<a href="#" class="btn btn-primary my-2">Main call to action</a>#}
                     {#<a href="#" class="btn btn-secondary my-2">Secondary action</a>#}
                 {#</p>#}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <div class="float-lg-right" id="add_serial"><i class="fas fa-plus fa-5x" style="color: red"></i></div>
+                    <div class="center hideform">
+                        <button id="close" style="float: right;">X</button>
+                            Name:<br>
+                            <input type="text" name="name" value="Name">
+                            <br>
+                            Desription:<br>
+                            <input type="text" name="short_desription" value="Desription">
+                            <br><br>
+                            <div class="float-lg-right" id="save_serial">
+                                <i class="fas fa-check fa-5x" style="color: greenyellow">
+
+                                </i>
+                            </div>
+                    </div>
+                {% endif %}
             </div>
         </section>
 

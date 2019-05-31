@@ -5,12 +5,14 @@ namespace App\Controller\Api\Serial;
 use App\Controller\Api\AbstractRestController;
 use App\Entity\Serial;
 use App\Repository\SerialRepository;
+use App\Service\ObjectManager;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\View as RestView;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -22,12 +24,19 @@ class SerialsApiController extends AbstractRestController
     private $serialsRepository;
 
     /**
+     * @var ObjectManager $objectManager
+     */
+    private $objectManager;
+
+    /**
      * SerialsApiController constructor.
      * @param SerialRepository $serialsRepository
+     * @param ObjectManager $objectManager
      */
-    public function __construct(SerialRepository $serialsRepository)
+    public function __construct(SerialRepository $serialsRepository, ObjectManager $objectManager)
     {
         $this->serialsRepository = $serialsRepository;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -112,6 +121,54 @@ class SerialsApiController extends AbstractRestController
         try {
             return $this->createSuccessResponse(
                 $serial
+            );
+        } catch (\Exception $e) {
+            $view = $this->view((array)$e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * put Serial by id.
+     * <strong>Simple example:</strong><br />
+     * http://endpoint/api/serials/data/{id} <br>.
+     *
+     * @ApiDoc(
+     * resource = true,
+     * description = "put Serial by id",
+     * authentication=true,
+     *  parameters={
+     *
+     *  },
+     * statusCodes = {
+     *      200 = "Returned when successful",
+     *      400 = "Bad request"
+     * },
+     * section="Serials"
+     * )
+     *
+     * @RestView()
+     *
+     * @throws NotFoundHttpException when not exist
+     *
+     * @return Response|View
+     *
+     * @IsGranted({"ROLE_ADMIN", "ROLE_USER"})
+     */
+    public function putSerialAction(Request $request)
+    {
+        try {
+            /** @var Serial $model */
+            $model = $this->objectManager->startProcessingEntity(
+                Serial::class,
+                'request',
+                [Serial::GROUP_PUT]
+            );
+            $this->serialsRepository->save($model);
+
+            return $this->createSuccessResponse(
+                $model
             );
         } catch (\Exception $e) {
             $view = $this->view((array)$e->getMessage(), Response::HTTP_BAD_REQUEST);

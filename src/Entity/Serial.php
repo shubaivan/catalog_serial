@@ -4,12 +4,15 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use JMS\Serializer\Annotation;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\SerialRepository")
  */
 class Serial
 {
+    const GROUP_PUT = 'put_group';
     use TimestampableEntity;
 
     /**
@@ -21,11 +24,13 @@ class Serial
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Annotation\Groups({Serial::GROUP_PUT})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Annotation\Groups({Serial::GROUP_PUT})
      */
     private $shortDescription;
 

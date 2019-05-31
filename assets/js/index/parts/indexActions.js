@@ -8,8 +8,10 @@ export default function printActionFunctions() {
         getSerialsData(current.data('pagin'), current);
     });
     $("body").on('click', ".edit_serial", function(){
-        let current = $(this);
-        updateFilm(current);
+        if ($('input').length === 0) {
+            let current = $(this);
+            updateFilm(current);
+        }
     });
 
     function getSerialsData(pagin, el) {
@@ -88,8 +90,8 @@ export default function printActionFunctions() {
             '    <div class="card mb-4 shadow-sm">\n' +
             '        <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&amp;bg=55595c&amp;fg=eceeef&amp;text=Thumbnail" alt="Thumbnail [100%x225]" style="height: 225px; width: 100%; display: block;" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22348%22%20height%3D%22225%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20348%20225%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_16b0547180a%20text%20%7B%20fill%3A%23eceeef%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A17pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_16b0547180a%22%3E%3Crect%20width%3D%22348%22%20height%3D%22225%22%20fill%3D%22%2355595c%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22116.234375%22%20y%3D%22120.3%22%3EThumbnail%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" data-holder-rendered="true">\n' +
             '        <div class="card-body">\n' +
-            '            <h4>Name</h4><p class="card-text serial_name">' + value.name + '</p>\n' +
-            '            <h4>Description</h4><p class="card-text serial_short_description">' + value.short_description + '</p>\n' +
+            '            <h4>Name</h4><p class="card-text" data-field="name">' + value.name + '</p>\n' +
+            '            <h4>Description</h4><p class="card-text" data-field="short_description">' + value.short_description + '</p>\n' +
             '            <div class="d-flex justify-content-between align-items-center">\n' +
             '                <div class="btn-group">\n' +
             '                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>\n';
@@ -127,12 +129,70 @@ export default function printActionFunctions() {
                 $.each(fields, function (index, value) {
                     var replaceInput = $('<input>').attr({
                         'data-el-id': serial,
+                        'data-field': $(value).data('field'),
                         value: value.textContent
                     });
                     $(value).replaceWith(replaceInput);
+                    handleEditMessageProcess(replaceInput);
                 })
 
             }
         })
+    }
+
+    function handleEditMessageProcess(handleEditMessage) {
+        handleEditMessage.keypress(function (event) {
+            var currentElement = $(this);
+            if($('.keyup').length === 0) {
+                var keyup = '<div class="keyup" data-el-id="'+currentElement.data('elId')+'">editing</div>';
+                $(keyup).insertAfter(currentElement);
+            }
+            if (event.keyCode == 13) {
+                $(this).trigger("enterKey");
+            }
+        });
+
+        handleEditMessage.on('change', function () {
+            var currentElement = $(this);
+            updateItem(currentElement);
+        })
+    }
+
+    function updateItem(currentInput) {
+
+        let elId = currentInput.data('elId');
+        let fieldName = currentInput.data('field');
+
+        var attributes = {};
+        attributes[fieldName] = currentInput.val();
+        attributes.id = elId;
+
+        let put_serial = window.Routing.generate(
+            'put_serial');
+
+        $.ajax({
+            type: "PUT",
+            url: put_serial,
+            data: JSON.stringify(attributes),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                var replaceP = $('<p>').attr({
+                    'class': 'card-text',
+                    'data-field': fieldName
+                });
+                replaceP.text(data[fieldName]);
+                currentInput.replaceWith(replaceP);
+
+                setTimeout(function () {
+                    $('.keyup').remove();
+                }, 2000);
+
+                console.log(data);
+            },
+            error: function (result) {
+                console.log(result)
+            }
+        });
     }
 }

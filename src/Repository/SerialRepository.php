@@ -46,4 +46,16 @@ class SerialRepository extends ServiceEntityRepository
 
         return $result;
     }
+
+    /**
+     * @param Serial $serial
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function save(Serial $serial)
+    {
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($serial);
+        $entityManager->flush();
+    }
 }

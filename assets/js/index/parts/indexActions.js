@@ -8,7 +8,7 @@ export default function printActionFunctions() {
         getSerialsData(current.data('pagin'), current);
     });
     $("body").on('click', ".edit_serial", function(){
-        if ($('input').length === 0) {
+        if ($('#main_content').find('input').length === 0) {
             let current = $(this);
             updateFilm(current);
         }

@@ -34,8 +34,7 @@ class SerialRepository extends ServiceEntityRepository
 
         if ($count) {
             $qb
-                ->select('COUNT(s.id)')
-                ->orderBy('s.createdAt', Criteria::DESC);
+                ->select('COUNT(s.id)');
             $query = $qb->getQuery();
             $result = $query->getSingleScalarResult();
         } else {
